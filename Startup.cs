@@ -11,14 +11,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using myBooks.Data;
 
 namespace myBooks
 {
   public class Startup
   {
+    public string ConnectionString { get; init; }
+
     public Startup(IConfiguration configuration)
     {
-	 Configuration = configuration;
+      Configuration = configuration;
+      //adding the connection string defined in appsettings.json
+      ConnectionString = Configuration.GetConnectionString("defaultConnectionString");
     }
 
     public IConfiguration Configuration { get; }
@@ -26,34 +32,30 @@ namespace myBooks
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+      services.AddControllers();
+      //Configure DbContext with sql
+      services.AddDbContext<AppDbContext>(options => options.UseSqlServer(ConnectionString));
 
-	 services.AddControllers();
-	 services.AddSwaggerGen(c =>
-	 {
-	   c.SwaggerDoc("v1", new OpenApiInfo { Title = "myBooks", Version = "v1" });
-	 });
+      services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "myBooks", Version = "v1" }); });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-	 if (env.IsDevelopment())
-	 {
-	   app.UseDeveloperExceptionPage();
-	   app.UseSwagger();
-	   app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "myBooks v1"));
-	 }
+      if (env.IsDevelopment())
+      {
+        app.UseDeveloperExceptionPage();
+        app.UseSwagger();
+        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "myBooks v1"));
+      }
 
-	 app.UseHttpsRedirection();
+      app.UseHttpsRedirection();
 
-	 app.UseRouting();
+      app.UseRouting();
 
-	 app.UseAuthorization();
+      app.UseAuthorization();
 
-	 app.UseEndpoints(endpoints =>
-	 {
-	   endpoints.MapControllers();
-	 });
+      app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
   }
 }
