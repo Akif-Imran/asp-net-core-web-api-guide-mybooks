@@ -56,6 +56,8 @@ namespace myBooks
       app.UseAuthorization();
 
       app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
+      AppDbInitializer.Seed(app);
     }
   }
 }
