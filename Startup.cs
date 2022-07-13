@@ -62,7 +62,7 @@ namespace myBooks
 
       app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
-      AppDbInitializer.Seed(app);
+      //AppDbInitializer.Seed(app);
     }
   }
 }
